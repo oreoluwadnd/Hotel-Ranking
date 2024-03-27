@@ -32,21 +32,21 @@ type Actions = {
   };
 };
 
-interface SelectedChainsType {
+type SelectedChainsType = {
   selectedChains: HotelChain["id"][];
-}
+};
 
-interface HotelState {
+type HotelState = {
   hotels: Hotel[];
-}
+};
 
-interface HotelChainState {
+type HotelChainState = {
   hotelChains: HotelChain[];
-}
+};
 
-interface ShowGrouped {
+type ShowGrouped = {
   showGrouped: boolean;
-}
+};
 export const useHotelStore = create<
   HotelState & HotelChainState & SelectedChainsType & ShowGrouped & Actions
 >()(

@@ -4,17 +4,6 @@ import { useHotelStore } from "../../../store/store";
 import { Button } from "../common/button";
 import MapComponent from "./map";
 
-export type hotelForm = {
-  name: string;
-  city: string;
-  country: string;
-  address: string;
-  chainId: string;
-  lat: number;
-  lng: number;
-  image: string;
-};
-
 export default function DetailsPage() {
   const navigate = useNavigate();
   const { id } = useParams();
