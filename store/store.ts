@@ -90,7 +90,6 @@ export const useHotelStore = create<
           },
           updateChain: (data: HotelChain) => {
             set((state) => {
-              //update the chain nd the hotels
               const index = state.hotelChains.findIndex(
                 (chain) => chain.id === data.id
               );
