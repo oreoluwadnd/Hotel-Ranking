@@ -13,11 +13,17 @@ export default function HotelCard({ hotel }: { hotel: Hotel }) {
       className="flex gap-1 flex-col cursor-pointer hover:shadow-lg p-3 rounded-lg"
     >
       <div className="relative w-full pb-[66.67%]">
-        <img
-          src={hotel.image}
-          alt={hotel.name}
-          className="absolute rounded-lg inset-0 w-full h-full object-cover"
-        />
+        {hotel.image ? (
+          <img
+            src={hotel.image}
+            alt={hotel.name}
+            className="absolute w-full h-full object-cover rounded-lg"
+          />
+        ) : (
+          <div className="absolute w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+            <icons.Hotel className="text-4xl text-gray-400" />
+          </div>
+        )}
       </div>
       <div className="flex gap-0.5 flex-col mt-1">
         <div className="flex justify-between">
@@ -28,7 +34,9 @@ export default function HotelCard({ hotel }: { hotel: Hotel }) {
         </p>
         <div className="flex items-center text-gray-500 gap-1">
           <icons.Collection />
-          <p className="font-medium">{getChainName(hotel.chainId!)}</p>
+          <p className="font-medium">
+            {getChainName(hotel.chainId!) || "No Chain"}
+          </p>
         </div>
         <div className="flex text-gray-500 gap-1">
           <icons.Location />

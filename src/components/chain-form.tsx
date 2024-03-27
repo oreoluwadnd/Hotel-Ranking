@@ -26,10 +26,23 @@ import { v4 as uuidv4 } from "uuid";
 import { icons as Icon } from "./common/icons";
 import { ControllerRenderProps } from "react-hook-form";
 import { useCallback, useState } from "react";
-import { Hotel, HotelChain, useHotelStore } from "../../store/store";
+import { HotelChain, useHotelStore } from "../../store/store";
 
 type ChainFormProps = {
-  field: ControllerRenderProps<Hotel, "chainId">;
+  field: ControllerRenderProps<
+    {
+      id: string;
+      name: string;
+      city: string;
+      country: string;
+      address: string;
+      chainId: string | undefined;
+      lat: number;
+      lng: number;
+      image: string | undefined;
+    },
+    "chainId"
+  >;
 };
 
 export default function ChainForm({ field }: ChainFormProps) {

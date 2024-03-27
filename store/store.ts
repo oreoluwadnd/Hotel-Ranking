@@ -11,7 +11,7 @@ export type Hotel = {
   lat: number;
   lng: number;
   id: string;
-  image: string;
+  image?: string;
 };
 export type HotelChain = {
   id: string;

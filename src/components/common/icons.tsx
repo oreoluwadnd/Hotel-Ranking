@@ -7,7 +7,14 @@ import {
   FaUnlink,
   FaTimes,
 } from "react-icons/fa";
-import { BiChevronDown, BiChevronUp } from "react-icons/bi";
+import { GoCheckCircle } from "react-icons/go";
+import {
+  BiChevronDown,
+  BiChevronLeft,
+  BiChevronRight,
+  BiChevronUp,
+} from "react-icons/bi";
+import { TbFileStar } from "react-icons/tb";
 import { FaLocationDot } from "react-icons/fa6";
 import { BsCheck } from "react-icons/bs";
 import { MdOutlineAttachMoney, MdNewLabel } from "react-icons/md";
@@ -24,8 +31,12 @@ export const icons = {
   Pencil: FaPencilAlt,
   ChevronUp: BiChevronUp,
   ChevronDown: BiChevronDown,
+  ChevronRight: BiChevronRight,
+  ChevronLeft: BiChevronLeft,
   Check: BsCheck,
   New: MdNewLabel,
   Times: FaTimes,
   Collection: HiOutlineCollection,
+  Files: TbFileStar,
+  Circle: GoCheckCircle,
 } as const;

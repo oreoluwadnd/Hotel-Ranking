@@ -1,6 +1,7 @@
 import HotelCard from "./hotel-card";
 import Switch from "../common/switch";
 import { Hotel, useHotelStore } from "../../../store/store";
+import NoResult from "./no-result";
 
 export default function CardList() {
   const {
@@ -38,10 +39,12 @@ export default function CardList() {
     <div className="px-4 lg:px-10 w-full gap-4 flex flex-col h-full">
       <div className=" w-full flex ">
         <div className=" w-full  items-center flex  justify-between">
-          <h2 className="font-semibold">Favorite Hotels</h2>
-          <div className="border gap-1 items-center rounded-lg flex p-2">
-            <h3 className="">Group by Chain</h3>
-            <Switch checked={showGrouped} onChange={handleChange} />
+          <h2 className="font-semibold">Hotels</h2>
+          <div className="flex gap-2">
+            <div className="border gap-1 items-center rounded-lg flex p-2">
+              <h3 className="">Group by Chain</h3>
+              <Switch checked={showGrouped} onChange={handleChange} />
+            </div>
           </div>
         </div>
       </div>
@@ -60,12 +63,20 @@ export default function CardList() {
               </div>
             )
           )}
+          {Object.keys(groupedHotels as { [s: string]: Hotel[] }).length ===
+            0 && <NoResult />}
         </div>
       ) : (
-        <div className="gap-5 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {filteredHotels.map((hotel) => (
-            <HotelCard key={hotel.id} hotel={hotel} />
-          ))}
+        <div>
+          {filteredHotels.length > 0 ? (
+            <div className="gap-5 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {filteredHotels.map((hotel) => (
+                <HotelCard key={hotel.id} hotel={hotel} />
+              ))}
+            </div>
+          ) : (
+            <NoResult />
+          )}
         </div>
       )}
     </div>

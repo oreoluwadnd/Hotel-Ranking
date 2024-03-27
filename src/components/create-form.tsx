@@ -1,4 +1,4 @@
-import { icons } from "./common/icons";
+import { icons as Icon } from "./common/icons";
 import {
   Form,
   FormItem,
@@ -17,7 +17,6 @@ import { useHotelStore } from "../../store/store";
 import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-
 const formSchema = z.object({
   name: z.string().min(1, {
     message: "Name is required",
@@ -35,9 +34,7 @@ const formSchema = z.object({
   id: z.string().optional(),
   lat: z.number(),
   lng: z.number(),
-  image: z.string().url({
-    message: "Image must be a valid URL",
-  }),
+  image: z.string().optional(),
 });
 
 export default function CreateForm() {
@@ -60,13 +57,13 @@ export default function CreateForm() {
       city: hotel?.city || "",
       country: hotel?.country || "",
       address: hotel?.address || "",
-      chainId: hotel?.chainId || "",
-      lat: hotel?.lat || 0,
-
-      lng: hotel?.lng || 0,
-      image: hotel?.image || "",
+      chainId: hotel?.chainId ?? undefined, // optional chaining
+      lat: hotel?.lat || 51.505,
+      lng: hotel?.lng || -0.09,
+      image: hotel?.image ?? undefined,
     },
   });
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (id) {
       updateHotel({ ...values, id });
@@ -87,7 +84,15 @@ export default function CreateForm() {
       <main className="grid items-start gap-4 p-2  md:gap-8 md:pb-20 md:p-6">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <icons.Hotel className="text-2xl" />
+            <Button
+              variant="secondary"
+              className="p-1 bg-gray-200 rounded-full flex items-center justify-center"
+            >
+              <a title="back" href="/">
+                <Icon.ChevronLeft className="text-3xl" />
+              </a>
+            </Button>
+            <Icon.Hotel className="text-2xl" />
             <h1 className="font-semibold text-2xl text-nowrap">
               {id ? "Edit Hotel" : "Create Hotel"}
             </h1>
@@ -108,7 +113,7 @@ export default function CreateForm() {
                 name="name"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Name*</FormLabel>
                     <FormInput placeholder="e.g Big Pineapple" {...field} />
 
                     <FormMessage />
@@ -141,7 +146,7 @@ export default function CreateForm() {
                 name="city"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>City</FormLabel>
+                    <FormLabel>City*</FormLabel>
                     <FormInput
                       placeholder="e.g Paris, London, Abuja"
                       {...field}
@@ -156,7 +161,7 @@ export default function CreateForm() {
                 name="country"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Country</FormLabel>
+                    <FormLabel>Country*</FormLabel>
                     <FormInput
                       placeholder="e.g Isreal, France, Canada"
                       {...field}
@@ -171,7 +176,7 @@ export default function CreateForm() {
                 name="address"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Address</FormLabel>
+                    <FormLabel>Address*</FormLabel>
                     <FormInput
                       placeholder="e.g 123 Tadpole street"
                       {...field}
@@ -185,7 +190,11 @@ export default function CreateForm() {
               <div className="col-span-1 md:col-span-2">
                 <FormLabel>Select Location</FormLabel>
                 <div>
-                  <MapComponent setValue={form.setValue} />
+                  <MapComponent
+                    setValue={form.setValue}
+                    lng={form.getValues("lng")}
+                    lat={form.getValues("lat")}
+                  />
                 </div>
               </div>
               <div className="w-full md:col-span-2 justify-center">
