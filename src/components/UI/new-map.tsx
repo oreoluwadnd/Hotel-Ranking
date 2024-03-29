@@ -49,7 +49,7 @@ type LanLng = {
 
 const NewMapComponent = ({ setValue, lat, lng }: MapProps) => {
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_API_KEY,
     libraries: ["places"],
   });
   const [marker, setMarker] = useState<LanLng | undefined>(undefined);
