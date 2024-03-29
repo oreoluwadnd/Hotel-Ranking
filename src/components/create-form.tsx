@@ -106,6 +106,7 @@ export default function CreateForm() {
         <div>
           <Form {...form}>
             <form
+              autoComplete="off"
               onSubmit={form.handleSubmit(onSubmit)}
               className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-6"
             >
