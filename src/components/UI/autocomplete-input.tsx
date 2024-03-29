@@ -99,7 +99,7 @@ export default function AutocompleteInput({ setValue, field }: Props) {
         name={field.name}
         onChange={field.onChange}
         type="text"
-        placeholder="Enter a location"
+        placeholder="Enter a location and select from the dropdown"
       />
     </Autocomplete>
   );
