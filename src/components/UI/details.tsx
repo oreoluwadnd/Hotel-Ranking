@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { icons as Icon } from "../common/icons";
 import { useHotelStore } from "../../../store/store";
 import { Button } from "../common/button";
-import MapComponent from "./map";
+import NewMapComponent from "./new-map";
 
 export default function DetailsPage() {
   const navigate = useNavigate();
@@ -38,9 +38,7 @@ export default function DetailsPage() {
               </a>
             </Button>
             <Icon.Hotel className="text-2xl" />
-            <h1 className="font-semibold text-2xl text-nowrap">
-              Hotel Details
-            </h1>
+            <h1 className="font-semibold text-2xl text-nowrap">Details</h1>
           </div>
           <div className="flex gap-2">
             <Button>
@@ -88,7 +86,7 @@ export default function DetailsPage() {
           </div>
           <hr className="my-4 border-gray-300" />
           <div className="flex flex-col  text-black">
-            <MapComponent lat={hotel?.lat || 0} lng={hotel?.lng || 0} />
+            <NewMapComponent lat={hotel?.lat || 0} lng={hotel?.lng || 0} />
           </div>
         </div>
       </div>

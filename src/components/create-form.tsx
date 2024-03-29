@@ -10,13 +10,14 @@ import {
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import MapComponent from "./UI/map";
 import { Button } from "./common/button";
 import ChainForm from "./chain-form";
 import { useHotelStore } from "../../store/store";
 import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import NewMapComponent from "./UI/new-map";
+import AutocompleteInput from "./UI/autocomplete-input";
 const formSchema = z.object({
   name: z.string().min(1, {
     message: "Name is required",
@@ -47,7 +48,6 @@ export default function CreateForm() {
   const { id } = useParams();
   console.log(id);
   const hotel = hotels.find((hotel) => hotel.id === id);
-  console.log(hotel);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -57,14 +57,15 @@ export default function CreateForm() {
       city: hotel?.city || "",
       country: hotel?.country || "",
       address: hotel?.address || "",
-      chainId: hotel?.chainId ?? undefined, // optional chaining
-      lat: hotel?.lat || 51.505,
-      lng: hotel?.lng || -0.09,
+      chainId: hotel?.chainId ?? undefined,
+      lat: hotel?.lat || 0,
+      lng: hotel?.lng || 0,
       image: hotel?.image ?? undefined,
     },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log(values);
     if (id) {
       updateHotel({ ...values, id });
     }
@@ -177,11 +178,13 @@ export default function CreateForm() {
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Address*</FormLabel>
-                    <FormInput
-                      placeholder="e.g 123 Tadpole street"
-                      {...field}
+                    <AutocompleteInput
+                      field={field}
+                      key={hotel?.id}
+                      setValue={form.setValue}
+                      lng={form.getValues("lng")}
+                      lat={form.getValues("lat")}
                     />
-
                     <FormMessage />
                   </FormItem>
                 )}
@@ -190,10 +193,11 @@ export default function CreateForm() {
               <div className="col-span-1 md:col-span-2">
                 <FormLabel>Select Location</FormLabel>
                 <div>
-                  <MapComponent
+                  <NewMapComponent
+                    key={hotel?.id}
                     setValue={form.setValue}
-                    lng={form.getValues("lng")}
-                    lat={form.getValues("lat")}
+                    lng={form.watch("lng")}
+                    lat={form.watch("lat")}
                   />
                 </div>
               </div>
