@@ -97,7 +97,7 @@ const NewMapComponent = ({ setValue, lat, lng }: MapProps) => {
   };
 
   if (!isLoaded) {
-    return null;
+    return <div className="w-full h-96 bg-gray-800 animate-pulse"></div>;
   }
   return (
     <GoogleMap
