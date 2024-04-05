@@ -12,8 +12,8 @@ export default function Header() {
         <div className="flex justify-between p-4 border-b shadow-sm">
           <a href={"/"} className="flex items-center">
             <Icon.Hotel className="text-2xl text-[#E63E21]" />
-            <h1 className="text-2xl font-bold text-[#E63E21]">Hotel</h1>
-            <h1 className="text-2xl font-bold">Ranking</h1>
+            <h1 className="text-2xl font-bold text-[#E63E21]">FaceBook</h1>
+            <h1 className="text-2xl font-bold">Tool</h1>
           </a>
           {isRootUrl && (
             <Button>
