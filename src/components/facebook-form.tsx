@@ -76,7 +76,7 @@ export default function FacebookForm() {
       location: "",
       lat: 0,
       lng: 0,
-      radius: 10,
+      radius: 20,
     },
   });
   function mergeData(data: GroupData[]): Group[] {

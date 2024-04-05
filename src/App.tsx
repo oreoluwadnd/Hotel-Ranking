@@ -8,7 +8,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/search" element={<Search />} />
+        <Route path="/" element={<Search />} />
         {/* <Route path="/new/:id?" element={<Create />} />
         <Route path="/search" element={<Search />} />
         <Route path="/details/:id" element={<Details />} /> */}
