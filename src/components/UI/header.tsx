@@ -1,6 +1,5 @@
 import { Button } from "../common/button";
 import { icons as Icon } from "../common/icons";
-import ChainCarousel from "./chain-carousel";
 
 export default function Header() {
   const pathname = window.location.pathname;
@@ -21,7 +20,6 @@ export default function Header() {
             </Button>
           )}
         </div>
-        {isRootUrl && <ChainCarousel />}
       </nav>
     </>
   );

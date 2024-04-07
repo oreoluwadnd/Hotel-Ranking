@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "./common/button";
 import { FaFacebook } from "react-icons/fa";
 
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,16 +36,24 @@ import { useState } from "react";
 import { cn } from "@/utils/utils";
 import FacebookAutocompleteInput from "./faceAutoComplete";
 import FaceBookNewMapComponent from "./facebookMap";
+import { getCloseCity } from "@/utils/ai";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   location: z.string().min(1, {
-    message: "Name is required",
+    message: "Location is required",
   }),
   radius: z.number(),
   lat: z.number(),
   lng: z.number(),
 });
 
+export type valuesType = {
+  location: string;
+  radius: number;
+  lat: number;
+  lng: number;
+};
 interface Group {
   link: string;
   description: string;
@@ -76,7 +84,7 @@ export default function FacebookForm() {
       location: "",
       lat: 0,
       lng: 0,
-      radius: 20,
+      radius: 0,
     },
   });
   function mergeData(data: GroupData[]): Group[] {
@@ -96,28 +104,28 @@ export default function FacebookForm() {
 
   const filteredWords = [
     "buy",
-    "sell",
-    "business",
-    "market",
-    "job",
-    "contractor",
-    "job",
-    "finder",
-    "help",
-    "wanted",
-    "adopt",
-    "shop",
-    "garage",
-    "sale",
-    "handyman",
-    "work",
-    "from",
-    "home",
-    "job",
-    "postings",
-    "real",
-    "estate",
-    "agents",
+    // "sell",
+    // "business",
+    // "market",
+    // "job",
+    // "contractor",
+    // "job",
+    // "finder",
+    // "help",
+    // "wanted",
+    // "adopt",
+    // "shop",
+    // "garage",
+    // "sale",
+    // "handyman",
+    // "work",
+    // "from",
+    // "home",
+    // "job",
+    // "postings",
+    // "real",
+    // "estate",
+    // "agents",
   ];
   function getMembers(detailsString: string) {
     const parts = detailsString.split(" · ");
@@ -157,24 +165,49 @@ export default function FacebookForm() {
     );
   });
 
+  console.log("🚀 ~ filteredData", form.formState.errors);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Handle successful submission, e.g., show a success message
 
     setData([]);
     setCities([]);
     setLoading(true);
-    console.log("response", values);
+    console.log("🚀 ~ onSubmit ~ values", values);
     try {
-      const response = await axios.post("http://localhost:8000/ai", values);
+      const aiResult = await getCloseCity(values);
+      toast.success(`City within ${values.radius}km found`);
 
-      const data = response.data.response;
+      if (!Array.isArray(aiResult) || aiResult.length === 0) {
+        setLoading(false);
+        toast.error("Error fetching groups");
+        return;
+      }
+      const datatosend = {
+        cities: aiResult,
+      };
 
-      setData(data.scrapeJson);
-      setCities(data.cities);
+      setCities(aiResult);
+      toast.promise(
+        axios.post("https://scrape-me.onrender.com/ai", datatosend),
+        {
+          loading: "Scraping Facebook",
+          success: (data: AxiosResponse) => {
+            console.log("🚀 ~ onSubmit ~ data:", data);
+            const groupData = data.data;
+
+            setData(groupData.groups);
+            return "Groups found";
+          },
+          error: "An error occured fetching groups",
+        }
+      );
+
       setLoading(false);
     } catch (error) {
       console.error("Error submitting data:", error);
-
+      // Handle errors, e.g., show an error message
+      toast.error("An error occured fetching groups");
       setLoading(false);
       return;
     }
@@ -238,10 +271,16 @@ export default function FacebookForm() {
               <FormField
                 control={form.control}
                 name="radius"
+                rules={{ required: "Radius is required" }}
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Radius</FormLabel>
-                    <FormInput placeholder="e.g 20 , 30 etc" {...field} />
+                    <FormInput
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value || "0"))
+                      }
+                    />
 
                     <FormMessage />
                   </FormItem>
@@ -287,8 +326,11 @@ export default function FacebookForm() {
             </Carousel>
           </section>
           <div className="grid grid-cols-4 gap-3">
-            {filteredData.map((group) => (
-              <div className="flex flex-1 gap-1 flex-col cursor-pointer hover:shadow-lg p-3 rounded-lg">
+            {filteredData.map((group, index) => (
+              <div
+                key={index}
+                className="flex flex-1 gap-1 flex-col cursor-pointer hover:shadow-lg p-3 rounded-lg"
+              >
                 <div className="relative w-full pb-[66.67%]">
                   <div className="absolute w-full h-full bg-black rounded-lg flex items-center justify-center">
                     <FaFacebook className="text-4xl text-blue-800" />
@@ -335,9 +377,7 @@ export default function FacebookForm() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Are you absolutely sure?
-                        </AlertDialogTitle>
+                        <AlertDialogTitle>Group Details</AlertDialogTitle>
                         <AlertDialogDescription>
                           <div className="h-80 overflow-y-scroll">
                             {group.summary}
