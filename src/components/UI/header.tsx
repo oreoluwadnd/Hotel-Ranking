@@ -1,10 +1,6 @@
-import { Button } from "../common/button";
 import { icons as Icon } from "../common/icons";
 
 export default function Header() {
-  const pathname = window.location.pathname;
-
-  const isRootUrl = pathname === "/";
   return (
     <>
       <nav className="w-full sticky  inset-x-0 top-0 z-30 bg-white">
