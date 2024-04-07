@@ -234,7 +234,26 @@ export default function FacebookForm() {
             Please provide the location you'd like to search for groups.
           </p>
         </div>
-
+        <div className="bg-red-200 p-4 m-3 rounded-md text-xs">
+          <p>
+            Note: Please be patient as it might take a while to scrape the
+            groups. The number of groups to fetch is limitless; we can fetch up
+            to a thousand groups and then filter and refine them to meet the
+            requirements.
+          </p>
+          <p>
+            I've added a limit to the number of groups fetched for smoother
+            testing, as it can be automated to be sent via email or any
+            preferred medium.
+          </p>
+          <p>
+            All the groups returned are private and have over 1000 members. I've
+            made slight adjustments to the group type, specifically excluding
+            buying, selling, and business groups, to facilitate smoother
+            testing. In actuality, these groups have been removed to refine the
+            testing process.
+          </p>
+        </div>
         <div>
           <Form {...form}>
             <form

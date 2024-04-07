@@ -14,11 +14,11 @@ export default function Header() {
             <h1 className="text-2xl font-bold text-[#E63E21]">FaceBook</h1>
             <h1 className="text-2xl font-bold">Tool</h1>
           </a>
-          {isRootUrl && (
+          {/* {isRootUrl && (
             <Button>
               <a href={"/new"}>Create</a>
             </Button>
-          )}
+          )} */}
         </div>
       </nav>
     </>
