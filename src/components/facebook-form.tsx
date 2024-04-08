@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "./common/button";
 import { FaFacebook } from "react-icons/fa";
 
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,16 +36,25 @@ import { useState } from "react";
 import { cn } from "@/utils/utils";
 import FacebookAutocompleteInput from "./faceAutoComplete";
 import FaceBookNewMapComponent from "./facebookMap";
+import { getCloseCity } from "@/utils/ai";
+import { toast } from "sonner";
+import { MdEmergency } from "react-icons/md";
 
 const formSchema = z.object({
   location: z.string().min(1, {
-    message: "Name is required",
+    message: "Location is required",
   }),
   radius: z.number(),
   lat: z.number(),
   lng: z.number(),
 });
 
+export type valuesType = {
+  location: string;
+  radius: number;
+  lat: number;
+  lng: number;
+};
 interface Group {
   link: string;
   description: string;
@@ -76,7 +85,7 @@ export default function FacebookForm() {
       location: "",
       lat: 0,
       lng: 0,
-      radius: 20,
+      radius: 0,
     },
   });
   function mergeData(data: GroupData[]): Group[] {
@@ -96,28 +105,28 @@ export default function FacebookForm() {
 
   const filteredWords = [
     "buy",
-    "sell",
-    "business",
-    "market",
-    "job",
-    "contractor",
-    "job",
-    "finder",
-    "help",
-    "wanted",
-    "adopt",
-    "shop",
-    "garage",
-    "sale",
-    "handyman",
-    "work",
-    "from",
-    "home",
-    "job",
-    "postings",
-    "real",
-    "estate",
-    "agents",
+    // "sell",
+    // "business",
+    // "market",
+    // "job",
+    // "contractor",
+    // "job",
+    // "finder",
+    // "help",
+    // "wanted",
+    // "adopt",
+    // "shop",
+    // "garage",
+    // "sale",
+    // "handyman",
+    // "work",
+    // "from",
+    // "home",
+    // "job",
+    // "postings",
+    // "real",
+    // "estate",
+    // "agents",
   ];
   function getMembers(detailsString: string) {
     const parts = detailsString.split(" · ");
@@ -157,42 +166,67 @@ export default function FacebookForm() {
     );
   });
 
+  console.log("🚀 ~ filteredData", form.formState.errors);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Handle successful submission, e.g., show a success message
 
     setData([]);
     setCities([]);
     setLoading(true);
-    console.log("response", values);
+    console.log("🚀 ~ onSubmit ~ values", values);
     try {
-      const response = await axios.post("http://localhost:8000/ai", values);
+      const aiResult = await getCloseCity(values);
+      toast.success(`City within ${values.radius}km found`);
 
-      const data = response.data.response;
+      if (!Array.isArray(aiResult) || aiResult.length === 0) {
+        setLoading(false);
+        toast.error("Error fetching groups");
+        return;
+      }
+      const datatosend = {
+        cities: aiResult,
+      };
 
-      setData(data.scrapeJson);
-      setCities(data.cities);
+      setCities(aiResult);
+      toast.promise(
+        axios.post("https://scrape-me.onrender.com/ai", datatosend),
+        {
+          loading: "Scraping Facebook",
+          success: (data: AxiosResponse) => {
+            console.log("🚀 ~ onSubmit ~ data:", data);
+            const groupData = data.data;
+
+            setData(groupData.groups);
+            return "Groups found";
+          },
+          error: "An error occured fetching groups",
+        }
+      );
+
       setLoading(false);
     } catch (error) {
       console.error("Error submitting data:", error);
-
+      // Handle errors, e.g., show an error message
+      toast.error("An error occured fetching groups");
       setLoading(false);
       return;
     }
   };
   return (
     <div className="h-full w-full p-1 md:px-10 border-2">
-      <main className="grid items-start gap-4 p-2  md:gap-8 md:pb-5 md:p-6">
+      <main className="grid items-start gap-4 p-2 md:pb-5 md:p-6">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <Button
+            {/* <Button
               variant="secondary"
               className="p-1 bg-gray-200 rounded-full flex items-center justify-center"
             >
               <a title="back" href="/">
                 <Icon.ChevronLeft className="text-3xl" />
               </a>
-            </Button>
-            <Icon.Hotel className="text-2xl" />
+            </Button> */}
+            <Icon.New className="text-2xl" />
             <h1 className="font-semibold text-2xl text-nowrap">
               Search For Groups
             </h1>
@@ -201,7 +235,30 @@ export default function FacebookForm() {
             Please provide the location you'd like to search for groups.
           </p>
         </div>
-
+        <div className="shadow-md p-4 m-3 rounded-sm text-xs">
+          <span className="text-clip flex items-center animate-pulse text-red-600 text-lg">
+            <MdEmergency />
+            Note:
+          </span>
+          <p>
+            Please be patient as it might take a while to scrape the groups. The
+            number of groups to fetch is limitless; we can fetch up to a
+            thousand groups and then filter and refine them to meet the
+            requirements.
+          </p>
+          <p>
+            I've added a limit to the number of groups fetched for smoother
+            testing, as it can be automated to be sent via email or any
+            preferred medium.
+          </p>
+          <p>
+            All the groups returned are private and have over 1000 members. I've
+            made slight adjustments to the group type, specifically excluding
+            buying, selling, and business groups, to facilitate smoother
+            testing. In actuality, these groups have been removed to refine the
+            testing process.
+          </p>
+        </div>
         <div>
           <Form {...form}>
             <form
@@ -210,7 +267,7 @@ export default function FacebookForm() {
               className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-6"
             >
               <div className="col-span-1 md:col-span-2">
-                <FormLabel>Select Location</FormLabel>
+                <FormLabel>Location</FormLabel>
                 <div>
                   <FaceBookNewMapComponent
                     setValue={form.setValue}
@@ -238,10 +295,16 @@ export default function FacebookForm() {
               <FormField
                 control={form.control}
                 name="radius"
+                rules={{ required: "Radius is required" }}
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Radius</FormLabel>
-                    <FormInput placeholder="e.g 20 , 30 etc" {...field} />
+                    <FormInput
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value || "0"))
+                      }
+                    />
 
                     <FormMessage />
                   </FormItem>
@@ -286,9 +349,12 @@ export default function FacebookForm() {
               <CarouselNext className="bg-white text-black hover:text-white hover:bg-black" />
             </Carousel>
           </section>
-          <div className="grid grid-cols-4 gap-3">
-            {filteredData.map((group) => (
-              <div className="flex flex-1 gap-1 flex-col cursor-pointer hover:shadow-lg p-3 rounded-lg">
+          <div className="grid grid-col-1 md:grid-cols-4  gap-3">
+            {filteredData.map((group, index) => (
+              <div
+                key={index}
+                className="flex flex-1 gap-1 flex-col cursor-pointer hover:shadow-lg p-3 rounded-lg"
+              >
                 <div className="relative w-full pb-[66.67%]">
                   <div className="absolute w-full h-full bg-black rounded-lg flex items-center justify-center">
                     <FaFacebook className="text-4xl text-blue-800" />
@@ -335,9 +401,7 @@ export default function FacebookForm() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Are you absolutely sure?
-                        </AlertDialogTitle>
+                        <AlertDialogTitle>Group Details</AlertDialogTitle>
                         <AlertDialogDescription>
                           <div className="h-80 overflow-y-scroll">
                             {group.summary}
