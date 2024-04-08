@@ -38,6 +38,7 @@ import FacebookAutocompleteInput from "./faceAutoComplete";
 import FaceBookNewMapComponent from "./facebookMap";
 import { getCloseCity } from "@/utils/ai";
 import { toast } from "sonner";
+import { MdEmergency } from "react-icons/md";
 
 const formSchema = z.object({
   location: z.string().min(1, {
@@ -214,18 +215,18 @@ export default function FacebookForm() {
   };
   return (
     <div className="h-full w-full p-1 md:px-10 border-2">
-      <main className="grid items-start gap-4 p-2  md:gap-8 md:pb-5 md:p-6">
+      <main className="grid items-start gap-4 p-2 md:pb-5 md:p-6">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <Button
+            {/* <Button
               variant="secondary"
               className="p-1 bg-gray-200 rounded-full flex items-center justify-center"
             >
               <a title="back" href="/">
                 <Icon.ChevronLeft className="text-3xl" />
               </a>
-            </Button>
-            <Icon.Hotel className="text-2xl" />
+            </Button> */}
+            <Icon.New className="text-2xl" />
             <h1 className="font-semibold text-2xl text-nowrap">
               Search For Groups
             </h1>
@@ -234,11 +235,15 @@ export default function FacebookForm() {
             Please provide the location you'd like to search for groups.
           </p>
         </div>
-        <div className="bg-red-200 p-4 m-3 rounded-md text-xs">
+        <div className="shadow-md p-4 m-3 rounded-sm text-xs">
+          <span className="text-clip flex items-center animate-pulse text-red-600 text-lg">
+            <MdEmergency />
+            Note:
+          </span>
           <p>
-            Note: Please be patient as it might take a while to scrape the
-            groups. The number of groups to fetch is limitless; we can fetch up
-            to a thousand groups and then filter and refine them to meet the
+            Please be patient as it might take a while to scrape the groups. The
+            number of groups to fetch is limitless; we can fetch up to a
+            thousand groups and then filter and refine them to meet the
             requirements.
           </p>
           <p>
@@ -262,7 +267,7 @@ export default function FacebookForm() {
               className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-6"
             >
               <div className="col-span-1 md:col-span-2">
-                <FormLabel>Select Location</FormLabel>
+                <FormLabel>Location</FormLabel>
                 <div>
                   <FaceBookNewMapComponent
                     setValue={form.setValue}
@@ -344,7 +349,7 @@ export default function FacebookForm() {
               <CarouselNext className="bg-white text-black hover:text-white hover:bg-black" />
             </Carousel>
           </section>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-col-1 md:grid-cols-4  gap-3">
             {filteredData.map((group, index) => (
               <div
                 key={index}
